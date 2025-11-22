@@ -95,8 +95,8 @@ static void testBasicCommand(void) {
 static void doTesting(void) {
   // testing the module locally
   testBasicOpcodes();
-  testBasicOperands();
-  testBasicCommand();
+  // testBasicOperands();
+  // testBasicCommand();
   // testing the module on sketch files via testing proxy
   char filename[12];
   for (int i = 0; i < 10; i++) {

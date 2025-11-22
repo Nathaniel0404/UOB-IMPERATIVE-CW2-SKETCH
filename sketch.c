@@ -22,7 +22,29 @@ void freeState(state *s) {
 // Extract an opcode from a byte (two most significant bits).
 int getOpcode(byte b) {
   //TO DO
-  return 0; // this is a placeholder only
+  const byte extractor = 192; // 1100 0000
+  const byte data = 192;
+  const byte tool = 128;
+  const byte dx = 0;
+  const byte dy = 64;
+  byte onlyCode = b & extractor;
+  int opCode = 0;
+  switch (onlyCode) {
+    case tool:
+      opCode = TOOL; break;
+    
+    case dx:
+      opCode = DX; break;
+    
+    case dy:
+      opCode = DY; break;
+    
+    case data:
+      opCode = DATA; break;
+  }
+    
+  
+  return opCode; // this is a placeholder only
 }
 
 // Extract an operand (-32..31) from the rightmost 6 bits of a byte.
