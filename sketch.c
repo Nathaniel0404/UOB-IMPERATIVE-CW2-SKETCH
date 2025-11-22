@@ -117,6 +117,10 @@ void performTool(display *d, state *s, int operand) {
       s->tx = s->data; break;
     case TARGETY:
       s->ty = s->data; break;
+    case SHOW:
+      show(d); break;
+    case PAUSE:
+      pause(d,s->data); break;
     default:
       break;
     
