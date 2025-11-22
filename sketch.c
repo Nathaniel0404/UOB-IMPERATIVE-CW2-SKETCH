@@ -8,7 +8,7 @@
 // Allocate memory for a drawing state and initialise it
 state *newState(void) {
   //TO DO
-  state *out;
+  state *out = malloc(sizeof(state));
   *out = (state) {0,0,0,0,LINE,0,0,0};
   return out; // this is a placeholder only
 }
