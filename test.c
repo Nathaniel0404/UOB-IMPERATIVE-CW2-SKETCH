@@ -96,16 +96,16 @@ static void doTesting(void) {
   // testing the module locally
   testBasicOpcodes();
   testBasicOperands();
-  // testBasicCommand();
+  testBasicCommand();
   // testing the module on sketch files via testing proxy
-  // char filename[12];
-  // for (int i = 0; i < 10; i++) {
-  //   sprintf(filename, "sketch%02d.sk",i);
-  //   view(filename);
-  //   if (i == 4) printf("ALL BASIC TESTS PASS.\n");
-  //   if (i == 7) printf("ALL INTERMEDIATE TESTS PASS.\n");
-  //   if (i == 9) printf("ALL ADVANCED TESTS PASS.\n");
-  // }
+  char filename[12];
+  for (int i = 0; i < 10; i++) {
+    sprintf(filename, "sketch%02d.sk",i);
+    view(filename);
+    if (i == 4) printf("ALL BASIC TESTS PASS.\n");
+    if (i == 7) printf("ALL INTERMEDIATE TESTS PASS.\n");
+    if (i == 9) printf("ALL ADVANCED TESTS PASS.\n");
+  }
 }
 
 // Check an actual call against the next expected call.
@@ -122,7 +122,8 @@ static void check(display *d) {
     }
     if ((strcmp(last, "processSketchReturn") == 0) &&
         (strcmp(d->call, "freeDisplay(d)") == 0));
-    else if (strcmp(d->call, expect) != 0) fail(d, "       Found call: %s\n       But expected: %s\n       Failure at call number: %d\n");
+    else if (strcmp(d->call, expect) != 0) 
+      fail(d, "       Found call: %s\n       But expected: %s\n       Failure at call number: %d\n");
   }
   last = expect;
   d->n = d->n + 1;
@@ -209,7 +210,8 @@ static char *testBasicCommands[] = {
 //Note that "processSketchReturn" is not a command but indicates
 //a point at which your processSketch(...) function has returned.
 //Also note that "" is not an expected call and is used to check for
-//right termination of call sequences.
+//right termination of call sequences. Also note that the lin(...) calls here
+//have a different parameter ordering (x0,y0,x1,y1) instead of (x0,x1,y0,y1).
 static char *sketch00[] = {
   "line(d,0,0,30,30)", "show(d)", "processSketchReturn", "freeDisplay(d)", ""
 };
@@ -311,6 +313,7 @@ static char **findTest(char *file) {
 // Report failure and exit.
 static void fail(display *d, char *format) {
     fprintf(stderr, "ERROR: Failure in drawing sketch file %s\n", d->file);
+    if (d->calls[d->n][0]=='l') fprintf(stderr, "IMPORTANT NOTE: The error message below shows the expected line command in the line(d,x0,y0,x1,y1) format,\n                where your line call should be in the format line(d,x0,x1,y0,y1)!\n");
     fprintf(stderr, format, d->call, d->calls[d->n], d->n + 1);
     exit(1);
 }

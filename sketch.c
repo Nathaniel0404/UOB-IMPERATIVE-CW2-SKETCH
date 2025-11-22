@@ -13,6 +13,17 @@ state *newState(void) {
   return out; // this is a placeholder only
 }
 
+void resetState(state* s) {
+  s->tool = LINE;
+  s->data = 0;
+  s->end = 0;
+  s->start = 0;
+  s->x = 0;
+  s->y = 0;
+  s->tx = 0;
+  s->ty = 0;
+}
+
 // Release all memory associated with the drawing state
 void freeState(state *s) {
   free(s);
@@ -86,9 +97,58 @@ int getOperand(byte b) {
   return out; 
 }
 
+void performTool(state *s, int operand) {
+  if (operand == 0) { // 1000 0000
+    s->tool = NONE;
+  } else if (operand == 1) { //1000 0001
+    s->tool = LINE;
+  }
+}
+
+void performDx(state *s, int operand) {
+  s->tx += operand;
+  // printf("X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
+}
+
+void performDy(display *d, state *s, int operand) {
+  s->ty += operand;
+  
+  // printf("X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
+  if (s->tool == LINE) {
+    line(d,s->x,s->tx,s->y,s->ty);  
+  }
+  
+  s->x = s->tx;
+  s->y = s->ty;
+}
+
 // Execute the next byte of the command sequence.
 void obey(display *d, state *s, byte op) {
   //TO DO
+  /*
+  1. Extract opcode and operand
+  2. Update tool var in state
+  3. if op == TOOL, operand == 0 set NONE else operand == 1 set LINE
+  if op == dx, operand = x', set tx = x'
+  if op == dy, operand = y', set ty = y', if LINE, call line(x,y,tx,ty), update current location
+  */
+ int opCode = getOpcode(op);
+ int operand = getOperand(op);
+  switch(opCode) {
+    case TOOL:
+      if (operand == 1) {
+        // printf("|LINE| \n");
+      } else {
+        // printf("|NONE| \n");
+      }
+      performTool(s,operand); break;
+    case DX:
+      // printf("|DX| OP: %d\n",operand);
+      performDx(s,operand); break;
+    case DY:
+      // printf("|DY| OP: %d\n",operand);
+      performDy(d,s,operand); break;
+  }
 }
 
 // Draw a frame of the sketch file. For basic and intermediate sketch files
@@ -103,7 +163,37 @@ bool processSketch(const char pressedKey, void *data, display *d) {
     //NOTE: TO GET THE FILENAME... char *filename = getName(d);
     //NOTE: DO NOT FORGET TO CALL show(d); AND TO RESET THE DRAWING STATE APART FROM
     //      THE 'START' FIELD AFTER CLOSING THE FILE
-
+    /*
+    1. Get sketch file name
+    2. Open file
+    LOOP
+    3. Get binary char
+    4. Call obey
+    ENDLOOP
+    5. call show
+    6. Reset state
+    7. Close file
+    */
+  if (data == NULL) {
+    return (pressedKey == 27);
+  }
+  state* s = (state*) data;
+  char* name = getName(d);
+  FILE* in = fopen(name,"rb");
+  if (in == NULL) {
+    fprintf(stderr,"Can't open %s: ", name);
+    fflush(stderr);
+    perror("");
+    exit(1);
+  }
+  byte b = fgetc(in);
+  while (!feof(in)) {
+      obey(d,s,b);
+      b = fgetc(in);
+  }
+  show(d);
+  fclose(in);
+  resetState(s);
   return (pressedKey == 27);
 }
 
