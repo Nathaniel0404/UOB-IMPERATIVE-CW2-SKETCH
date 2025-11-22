@@ -103,6 +103,15 @@ void performTool(state *s, int operand) {
   } else if (operand == 1) { //1000 0001
     s->tool = LINE;
   }
+  switch(operand) {
+    case 0:
+      s->tool = NONE; break;
+    case 1:
+      s->tool = LINE; break;
+    case 2:
+      s->tool = BLOCK; break;
+    
+  }
 }
 
 void performDx(state *s, int operand) {
@@ -114,8 +123,16 @@ void performDy(display *d, state *s, int operand) {
   s->ty += operand;
   
   // printf("X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
+  
   if (s->tool == LINE) {
     line(d,s->x,s->tx,s->y,s->ty);  
+  } else if (s->tool == BLOCK) {
+    /*
+    Draw block at x,y with w=tx-x and h = ty-y
+    */
+    int w = s->tx - s->x;
+    int h = s->ty - s->y;
+    block(d,s->x,s->y,w,h);
   }
   
   s->x = s->tx;
