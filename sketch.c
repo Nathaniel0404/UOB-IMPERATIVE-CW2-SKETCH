@@ -56,7 +56,7 @@ int convertNegInt(byte b) {
   5. If 0 then -32 else *-1 
   */
   //Check if it is a negative
-  const byte extractor = 31; // 0001 1111
+  
   const byte removeOpCode = 63; // 0011 1111
   int out;
   b &= removeOpCode;
