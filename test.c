@@ -87,17 +87,36 @@ static void testBasicCommand(void) {
   obey(d, s, 0x5e);
   assert(__LINE__, s->tx == 60 && s->ty == 59);
   assert(__LINE__, s->x == 60 && s->y == 59);
+  obey(d, s, 0xCF);
+  assert(__LINE__, s->data == 15);
+  obey(d, s, 0xCF);
+  assert(__LINE__, s->data == 975);
+  obey(d, s, 0x81);
+  assert(__LINE__, s->tool == LINE);
   show(d);
   freeState(s);
   freeDisplay(d);
+  printf("Intm Command Tests OK.\n");
 }
 
+// static void testIntmCommand(void) {
+//   display *d = newDisplay("testBasicCommands", 200, 200);
+//   state *s = newState();
+//   obey(d, s, 0xCF);
+//   assert(__LINE__, s->data == 15);
+//   obey(d, s, 0xCF);
+//   assert(__LINE__, s->data == 975);
+//   freeState(s);
+//   freeDisplay(d);
+//   printf("Intm Command Tests OK.\n");
+// }
 // Running the FULL Testing Framework
 static void doTesting(void) {
   // testing the module locally
   testBasicOpcodes();
   testBasicOperands();
   testBasicCommand();
+
   // testing the module on sketch files via testing proxy
   char filename[12];
   for (int i = 0; i < 10; i++) {

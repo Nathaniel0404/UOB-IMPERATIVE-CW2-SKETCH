@@ -122,6 +122,19 @@ void performDy(display *d, state *s, int operand) {
   s->y = s->ty;
 }
 
+void performData(state *s, int operand) {
+  /*
+  Shifts current data value in s by 6 to the left, insert 6 bit operand 
+  1. shift data by 6
+  2. use or to merge operand and data
+  */
+ 
+ int old = s->data;
+  s->data <<= 6;
+  s->data |= operand;
+  // printf("data: %d newdata: %d\n", old, s->data);
+}
+
 // Execute the next byte of the command sequence.
 void obey(display *d, state *s, byte op) {
   //TO DO
@@ -141,13 +154,19 @@ void obey(display *d, state *s, byte op) {
       } else {
         // printf("|NONE| \n");
       }
-      performTool(s,operand); break;
+      performTool(s,operand);
+      s->data = 0;
+      break;
     case DX:
       // printf("|DX| OP: %d\n",operand);
       performDx(s,operand); break;
     case DY:
       // printf("|DY| OP: %d\n",operand);
       performDy(d,s,operand); break;
+    case DATA:
+      // printf("|DATA| OP: %d\n",operand);
+      performData(s,operand); break;
+      
   }
 }
 
