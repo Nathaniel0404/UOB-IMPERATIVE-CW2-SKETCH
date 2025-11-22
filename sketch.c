@@ -106,35 +106,22 @@ void performTool(display *d, state *s, int operand) {
   }
   switch(operand) {
     case NONE:
-      printf("|NONE| \n");
       s->tool = NONE; break;
-      
     case LINE:
-      printf("|LINE| \n");
       s->tool = LINE; break;
     case BLOCK:
-      printf("|BLOCK| \n");
       s->tool = BLOCK; break;
     case COLOUR:
-      printf("|COLOUR| %02x\n",s->data);
       colour(d,s->data); break;
-      
     case TARGETX:
-      printf("|TARGETX|\n");
       s->tx = s->data; break;
     case TARGETY:
-      printf("|TARGETY|\n");
       s->ty = s->data; break;
     case SHOW:
-      printf("|SHOW|\n");
       show(d); break;
-      
     case PAUSE:
-      printf("|PAUSE|\n");
       pause(d,s->data); break;
-      
     case NEXTFRAME:
-      printf("|NEXTFRAME|\n");
       s->start = n_commands;
       s->end = true;
     default:
@@ -145,13 +132,10 @@ void performTool(display *d, state *s, int operand) {
 
 void performDx(state *s, int operand) {
   s->tx += operand;
-  // printf("X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
 }
 
 void performDy(display *d, state *s, int operand) {
   s->ty += operand;
-  
-  // printf("X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
   
   if (s->tool == LINE) {
     line(d,s->x,s->tx,s->y,s->ty);  
@@ -161,7 +145,7 @@ void performDy(display *d, state *s, int operand) {
     */
     int w = s->tx - s->x;
     int h = s->ty - s->y;
-    // printf("Block X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
+    
     block(d,s->x,s->y,w,h);
   }
   
@@ -175,12 +159,10 @@ void performData(state *s, int operand) {
   1. shift data by 6
   2. use or to merge operand and data
   */
- 
-  int old = s->data;
   operand &= 63; //0011 1111
   s->data <<= 6;
   s->data |= operand;
-  // printf("data: %d newdata: %d\n", old, s->data);
+  
 }
 
 // Execute the next byte of the command sequence.
@@ -197,24 +179,15 @@ void obey(display *d, state *s, byte op) {
  int operand = getOperand(op);
   switch(opCode) {
     case TOOL:
-      if (operand == 1) {
-        
-      } else {
-        
-      }
       performTool(d,s,operand);
       s->data = 0;
       break;
     case DX:
-      printf("|DX| OP: %d\n",operand);
       performDx(s,operand); break;
     case DY:
-      printf("|DY| OP: %d\n",operand);
       performDy(d,s,operand); break;
-    case DATA:
-      
+    case DATA: 
       performData(s,operand); 
-      printf("|DATA| OP: %02x DATA: %02x\n",operand,s->data);
       break;
     default:
       break;
@@ -252,6 +225,7 @@ bool processSketch(const char pressedKey, void *data, display *d) {
   }
   state* s = (state*) data;
   n_commands = s->start;
+
   char* name = getName(d);
   FILE* in = fopen(name,"rb");
   if (in == NULL) {
@@ -260,24 +234,24 @@ bool processSketch(const char pressedKey, void *data, display *d) {
     perror("");
     exit(1);
   }
+
   int count_command = 0;
   byte b = fgetc(in);
+
   while (!feof(in) && !s->end) {
     if (count_command >= s->start) {
       n_commands += 1;
-      printf("%d %d ",count_command,b);
-
       obey(d,s,b);
-      
     }
     b = fgetc(in);
     count_command++;
   }
+
   resetState(s);
-  if (s->start != n_commands) {
-    
+  if (s->start != n_commands) {  
     s->start = 0;
   }
+
   show(d);
   fclose(in);
   
