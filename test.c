@@ -42,6 +42,7 @@ static void testBasicOpcodes(void) {
   assert(__LINE__, getOpcode(0x1F) == DX);
   assert(__LINE__, getOpcode(0x20) == DX);
   assert(__LINE__, getOpcode(0x3F) == DX);
+  assert(__LINE__, getOpcode(0xC0) == DATA);
   printf("Opcode Tests OK.\n");
 }
 
