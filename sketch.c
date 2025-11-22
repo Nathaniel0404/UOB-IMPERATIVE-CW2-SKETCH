@@ -97,19 +97,21 @@ int getOperand(byte b) {
   return out; 
 }
 
-void performTool(state *s, int operand) {
+void performTool(display *d, state *s, int operand) {
   if (operand == 0) { // 1000 0000
     s->tool = NONE;
   } else if (operand == 1) { //1000 0001
     s->tool = LINE;
   }
   switch(operand) {
-    case 0:
+    case NONE:
       s->tool = NONE; break;
-    case 1:
+    case LINE:
       s->tool = LINE; break;
-    case 2:
+    case BLOCK:
       s->tool = BLOCK; break;
+    case COLOUR:
+      s->tool = COLOUR; break;
     
   }
 }
@@ -171,7 +173,7 @@ void obey(display *d, state *s, byte op) {
       } else {
         // printf("|NONE| \n");
       }
-      performTool(s,operand);
+      performTool(d,s,operand);
       s->data = 0;
       break;
     case DX:
