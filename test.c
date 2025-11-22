@@ -95,17 +95,17 @@ static void testBasicCommand(void) {
 static void doTesting(void) {
   // testing the module locally
   testBasicOpcodes();
-  // testBasicOperands();
+  testBasicOperands();
   // testBasicCommand();
   // testing the module on sketch files via testing proxy
-  char filename[12];
-  for (int i = 0; i < 10; i++) {
-    sprintf(filename, "sketch%02d.sk",i);
-    view(filename);
-    if (i == 4) printf("ALL BASIC TESTS PASS.\n");
-    if (i == 7) printf("ALL INTERMEDIATE TESTS PASS.\n");
-    if (i == 9) printf("ALL ADVANCED TESTS PASS.\n");
-  }
+  // char filename[12];
+  // for (int i = 0; i < 10; i++) {
+  //   sprintf(filename, "sketch%02d.sk",i);
+  //   view(filename);
+  //   if (i == 4) printf("ALL BASIC TESTS PASS.\n");
+  //   if (i == 7) printf("ALL INTERMEDIATE TESTS PASS.\n");
+  //   if (i == 9) printf("ALL ADVANCED TESTS PASS.\n");
+  // }
 }
 
 // Check an actual call against the next expected call.

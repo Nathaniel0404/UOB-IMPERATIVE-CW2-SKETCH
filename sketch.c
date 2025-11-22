@@ -40,17 +40,50 @@ int getOpcode(byte b) {
       opCode = DY; break;
     
     case data:
-      opCode = DATA; break;
+      opCode = DATA; break; 
   }
     
   
   return opCode; // this is a placeholder only
 }
 
+int convertNegInt(byte b) {
+  /*
+  1. subtract 1
+  2. Negate to flip bits
+  3. & 0011 1111
+  4. Convert to int
+  5. If 0 then -32 else *-1 
+  */
+  //Check if it is a negative
+  const byte extractor = 31; // 0001 1111
+  const byte removeOpCode = 63; // 0011 1111
+  int out;
+  b &= removeOpCode;
+  b -= 1;
+  b = ~b;
+  b &= removeOpCode;
+  out = (int) b;
+  if (b == 0) {
+    out = -32;
+  } else {
+    out *= -1;
+  }
+  return out;
+}
+
 // Extract an operand (-32..31) from the rightmost 6 bits of a byte.
 int getOperand(byte b) {
   //TO DO
-  return 0; // this is a placeholder only
+  const byte extractor = 31; // 0001 1111
+  const byte negSign = 32; // 0010 0000
+  byte operand = b & extractor;
+  int out = (int) operand;
+  if ((b & negSign) == 32) { // Negative int
+    out = convertNegInt(b);
+  } 
+  
+  return out; 
 }
 
 // Execute the next byte of the command sequence.
