@@ -111,7 +111,14 @@ void performTool(display *d, state *s, int operand) {
     case BLOCK:
       s->tool = BLOCK; break;
     case COLOUR:
-      s->tool = COLOUR; break;
+      colour(d,s->data); break;
+      // printf("|COLOUR| %02x\n",s->data);break;
+    case TARGETX:
+      s->tx = s->data; break;
+    case TARGETY:
+      s->ty = s->data; break;
+    default:
+      break;
     
   }
 }
@@ -134,6 +141,7 @@ void performDy(display *d, state *s, int operand) {
     */
     int w = s->tx - s->x;
     int h = s->ty - s->y;
+    // printf("Block X: %d TX: %d Y:%d TY: %d\n",s->x,s->tx,s->y,s->ty);
     block(d,s->x,s->y,w,h);
   }
   
@@ -148,7 +156,8 @@ void performData(state *s, int operand) {
   2. use or to merge operand and data
   */
  
- int old = s->data;
+  int old = s->data;
+  operand &= 63; //0011 1111
   s->data <<= 6;
   s->data |= operand;
   // printf("data: %d newdata: %d\n", old, s->data);
@@ -185,9 +194,16 @@ void obey(display *d, state *s, byte op) {
     case DATA:
       // printf("|DATA| OP: %d\n",operand);
       performData(s,operand); break;
+    default:
+      break;
       
   }
 }
+
+/*
+00000000000000001111111111111111 
+11111111111111111111111111111111
+*/
 
 // Draw a frame of the sketch file. For basic and intermediate sketch files
 // this means drawing the full sketch whenever this function is called.
