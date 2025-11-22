@@ -17,7 +17,6 @@ void resetState(state* s) {
   s->tool = LINE;
   s->data = 0;
   s->end = 0;
-  s->start = 0;
   s->x = 0;
   s->y = 0;
   s->tx = 0;
@@ -244,10 +243,12 @@ bool processSketch(const char pressedKey, void *data, display *d) {
     perror("");
     exit(1);
   }
+  int n_command = 0;
   byte b = fgetc(in);
   while (!feof(in)) {
       obey(d,s,b);
       b = fgetc(in);
+      n_command -= 1;
   }
   show(d);
   fclose(in);
